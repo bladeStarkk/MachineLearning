@@ -102,6 +102,36 @@ def p_2_1(x):                         # Methode um die Gerade zu berechnen
     result = w_2_1[0] + w_2_1[1] * x  # Berechnung der Geraden
     return result
 ```
+```python
+# Perzeptron-Entscheidungsfunktion
+def h(x: np.ndarray, w: np.ndarray) -> int:     # findet h(x)
+    return np.sign(np.dot(w, x))
+
+
+# Berechnet den Fehler E_in
+def e_in(w: np.ndarray, X: np.ndarray, y: np.ndarray) -> float:     #berechnet den E_in Fehler
+    samples = sum((h(x_i, w) != y_i for x_i, y_i in zip(X, y)))
+    return (1 / X.shape[0]) * samples
+
+
+def pla_pocket(X, y, w, T, pocket):                                 # PLA Algorithmus
+    if T == 0:                                                      # ruft sich selbst auf, bis T = 0
+        return pocket
+    X_stacked = np.column_stack([np.ones(X.shape[0]), X])           # Bias hinzufügen als erste Spalte in dem X array
+    for x_i, y_i in zip(X_stacked, y):                              # für jedes Element in X und y
+        h_i = h(x_i, w)                                             # Vorhersage berechnen
+        if h_i == y_i:                                              # wenn die Vorhersage korrekt ist
+            continue
+
+        # neues w ausrechnen, weiteriterieren und eventuell neues pocket speichern
+        w_next = w + x_i * y_i
+        # wenn kein pocket existiert oder der neue Fehler kleiner ist:
+        if pocket is None or e_in(w_next, X_stacked, y) < e_in(pocket, X_stacked, y):   
+            pocket = np.copy(w_next)                                # neues pocket speichern
+
+        return pla_pocket(X, y, w_next, T - 1, pocket)              # rekursiv aufrufen mit neuem w und T-1
+    return w
+```
 
 
 ## In-Sample Fehler und Out-of-Sample Fehler
@@ -153,3 +183,10 @@ wird erst spaeter behandelt
   - $ h(\mathbf{x}) = \text{sign} \left( \underbrace{(-0.6)}_{\tilde{w}_0} \cdot \underbrace{1}_{z_0} + \underbrace{1}_{\tilde{w}_1} \cdot \underbrace{x_1^2}_{z_1} + \underbrace{1}_{\tilde{w}_2} \cdot \underbrace{x_2^2}_{z_2} \right) $
   - $ = \text{sign} \left( \underbrace{ \begin{bmatrix} \tilde{w}_0 & \tilde{w}_1 & \tilde{w}_2 \end{bmatrix} }_{\tilde{\mathbf{w}}^T} \underbrace{ \begin{bmatrix} 1 \\ z_1 \\ z_2 \end{bmatrix} }_{\mathbf{z}} \right) $
   - Algorithmen bleiben gleich, nur die Daten wurden transformiert
+
+# Uebung 3:
+Welches Thema?
+
+## Codebeispiele mit Notizen
+
+## 
